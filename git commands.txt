@@ -1,0 +1,7 @@
+git checkout -b <branch name> (create new branch)
+git status (check status)
+git add (add changed files)
+git add . (add all files)
+git diff (
+git commit -m <comment> (commit)
+git push origin <current branch name> (add to github)
