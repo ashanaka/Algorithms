@@ -3,9 +3,6 @@
 using namespace std;
 
 
-
-
-
 int main(){
 	
 	int noOfGoods;
@@ -16,7 +13,8 @@ int main(){
 	cout << "Max weight: ";
 	cin >> maxWeight;
 	
-	int dataArr[2][noOfGoods];
+	int dataArr[noOfGoods][2];
+	
 	cout << "Weight  Profit:\n";
 	
 	for(int i=0; i<noOfGoods; i++){
@@ -28,13 +26,13 @@ int main(){
 		
 		for(int j=i; j<noOfGoods; j++){
 			
-			if(dataArr[j][0] > dataArr[j+1][0]){
+			if(dataArr[i][0] >= dataArr[j+1][0]){
 				
-				int temp1 = dataArr[j][0];
-				int temp2 = dataArr[j][1];
+				int temp1 = dataArr[i][0];
+				int temp2 = dataArr[i][1];
 				
-				dataArr[j][0] = dataArr[j+1][0];
-				dataArr[j][0] = dataArr[j+1][1];
+				dataArr[i][0] = dataArr[j+1][0];
+				dataArr[i][1] = dataArr[j+1][1];
 				
 				dataArr[j+1][0] = temp1;
 				dataArr[j+1][1] = temp2;
@@ -42,10 +40,46 @@ int main(){
 			}
 		}
 	}
+
+	//to check sorted Data Array
+//	for(int i=0; i<noOfGoods; i++){
+//		cout << dataArr[i][0] << " " << dataArr[i][1] << endl;
+//	}
 	
-	int knackMatrix[noOfGoods+2][];
+	int knackMatrix[noOfGoods+2][maxWeight+4];
 	
+	for(int i=0; i<(noOfGoods+2); i++){
+		
+		for(int j=0; j<(maxWeight+4); j++){
+			
+			knackMatrix[i][j] = 0;
+		}
+	}
 	
+	for(int i=3; i<(maxWeight+4); i++){
+		
+		knackMatrix[0][i] = i-3;
+		knackMatrix[1][i] = 0;
+	}
 	
+	for(int i=1; i<(noOfGoods+2); i++){
+		
+		knackMatrix[i][2] = i-1;
+		knackMatrix[i+1][2] = 0;
+		
+		
+		knackMatrix[i+1][0] = dataArr[i-1][1];
+		knackMatrix[i+1][1] = dataArr[i-1][0];
+		
+	}
+	
+	for(int i=0; i<(noOfGoods+2); i++){
+		
+		for(int j=0; j<(maxWeight+4); j++){
+			
+			cout << knackMatrix[i][j] << "\t";
+		}
+		cout << "\n" ;
+	}
     return 0;
 }
