@@ -2,6 +2,13 @@
 
 using namespace std;
 
+int max(int a, int b){
+	if(a>b){
+		return a;
+	}else{
+		return b;
+	}
+}
 
 int main(){
 	
@@ -71,6 +78,18 @@ int main(){
 		knackMatrix[i+1][0] = dataArr[i-1][1];
 		knackMatrix[i+1][1] = dataArr[i-1][0];
 		
+	}
+	
+	for(int i=2; i<(noOfGoods+2); i++){
+		for(int w=4; w<(maxWeight+4); w++){
+			int val = max(knackMatrix[i-1][w], (knackMatrix[i-1][(w-knackMatrix[i][1])]+ knackMatrix[i][0]));
+			if(val >= knackMatrix[0][w]){
+				knackMatrix[i][w] = knackMatrix[i-1][w];
+			}else{
+				
+				knackMatrix[i][w] = val;
+			}
+		}
 	}
 	
 	for(int i=0; i<(noOfGoods+2); i++){
