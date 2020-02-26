@@ -107,19 +107,24 @@ int main(){
 		cout << "\n" ;
 	}
 	
-	int profit = knackMatrix[noOfGoods+2][maxWeight+4];
+	int profit = knackMatrix[noOfGoods+1][maxWeight+3];
 	
-	for(int i=(noOfGoods+2); i>0; i--){
+	for(int i=(noOfGoods+2); i>=2; i--){
 		
 		int prevAvail = 0;
 		
+		
+		
 		for(int j=3; j<(maxWeight+4); j++){
+			
+//			cout << knackMatrix[i][j] << "  check \t";
 			
 			if(profit == knackMatrix[i-1][j]){
 				prevAvail = 1;
 				break;
 			}
 		}
+//			cout << endl;
 		
 		if(prevAvail == 0){
 			profit -= knackMatrix[i][0];
