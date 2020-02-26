@@ -80,14 +80,16 @@ int main(){
 		
 	}
 	
+	
 	for(int i=2; i<(noOfGoods+2); i++){
 		
 		for(int w=4; w<(maxWeight+4); w++){
 			
-			int val = max(knackMatrix[i-1][w], (knackMatrix[i-1][(w-knackMatrix[i][1])]+ knackMatrix[i][0]));
+			int val1 = (knackMatrix[0][w]-knackMatrix[i][1]);
+			int val =(int) max(knackMatrix[i-1][w], (knackMatrix[i-1][val1+3] + knackMatrix[i][0]));
 			
-			if(val >= knackMatrix[0][w]){
-				
+			if(knackMatrix[0][w] < knackMatrix[i][1]){
+		        
 				knackMatrix[i][w] = knackMatrix[i-1][w];
 			}else{
 				
@@ -115,7 +117,7 @@ int main(){
 			
 			if(profit == knackMatrix[i-1][j]){
 				prevAvail = 1;
-				continue;
+				break;
 			}
 		}
 		
