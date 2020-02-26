@@ -72,18 +72,22 @@ int main(){
 	for(int i=1; i<(noOfGoods+2); i++){
 		
 		knackMatrix[i][2] = i-1;
-		knackMatrix[i+1][2] = 0;
+		knackMatrix[i][3] = 0;
 		
 		
-		knackMatrix[i+1][0] = dataArr[i-1][1];
-		knackMatrix[i+1][1] = dataArr[i-1][0];
+		knackMatrix[i][0] = dataArr[i-1][1];
+		knackMatrix[i][1] = dataArr[i-1][0];
 		
 	}
 	
 	for(int i=2; i<(noOfGoods+2); i++){
+		
 		for(int w=4; w<(maxWeight+4); w++){
+			
 			int val = max(knackMatrix[i-1][w], (knackMatrix[i-1][(w-knackMatrix[i][1])]+ knackMatrix[i][0]));
+			
 			if(val >= knackMatrix[0][w]){
+				
 				knackMatrix[i][w] = knackMatrix[i-1][w];
 			}else{
 				
@@ -99,6 +103,26 @@ int main(){
 			cout << knackMatrix[i][j] << "\t";
 		}
 		cout << "\n" ;
+	}
+	
+	int profit = knackMatrix[noOfGoods+2][maxWeight+4];
+	
+	for(int i=(noOfGoods+2); i>0; i--){
+		
+		int prevAvail = 0;
+		
+		for(int j=3; j<(maxWeight+4); j++){
+			
+			if(profit == knackMatrix[i-1][j]){
+				prevAvail = 1;
+				continue;
+			}
+		}
+		
+		if(prevAvail == 0){
+			profit -= knackMatrix[i][0];
+			cout << knackMatrix[i][1] << "\t";
+		}
 	}
     return 0;
 }
