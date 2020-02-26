@@ -47,11 +47,6 @@ int main(){
 			}
 		}
 	}
-
-	//to check sorted Data Array
-//	for(int i=0; i<noOfGoods; i++){
-//		cout << dataArr[i][0] << " " << dataArr[i][1] << endl;
-//	}
 	
 	int knackMatrix[noOfGoods+2][maxWeight+4];
 	
@@ -117,14 +112,11 @@ int main(){
 		
 		for(int j=3; j<(maxWeight+4); j++){
 			
-//			cout << knackMatrix[i][j] << "  check \t";
-			
 			if(profit == knackMatrix[i-1][j]){
 				prevAvail = 1;
 				break;
 			}
 		}
-//			cout << endl;
 		
 		if(prevAvail == 0){
 			profit -= knackMatrix[i][0];
