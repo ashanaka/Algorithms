@@ -1,222 +1,192 @@
 #include<iostream>
 #include<stdlib.h>
-//#include <bits/stdc++.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-//enum color {red, black};
+enum Color {red, black};
 
 struct node{
 	
 	struct node* right;
 	struct node* left;
 	struct node* parent;
-//	bool color;
-	int black;
-	int red;
+	bool color;
 	int data;
+	
+	node(int data){
+		
+		this->data = data;
+		this->color = red;
+		left = right = parent = NULL;
+	}
 };
 
 struct node* root = NULL;
 
-//create a new node
-struct node* createNode(int data){
-	
-	struct node* newNode  = (struct node*)malloc(sizeof(struct node));
-	newNode->red = 1;
-	newNode->black = 0;
-	newNode->left = NULL;
-	newNode->right = NULL;
-	newNode->parent = NULL;
-	newNode->data = data;
-	
-	return newNode;
-}
-
-//swap colors of two nodes
-void swap(struct node* parentPt, struct node* grandParentPt){
-	
-	struct node* temp;
-	temp->black = parentPt->black;
-	temp->red = parentPt->red;
-	
-	parentPt->black = grandParentPt->black;
-	parentPt->red = grandParentPt->red;
-	
-	grandParentPt->black = temp->black;
-	grandParentPt->red = temp->red;
-}
 
 //rotate right
-void rotateRight(node *&rootNode, node *&pt) 
+void rightRotate(node *&rootNode, node *&ptr) 
 { 
-	node *pt_left = pt->left; 
+	node *leftPtr = ptr->left; 
 
-	pt->left = pt_left->right; 
+	ptr->left = leftPtr->right; 
 
-	if (pt->left != NULL) 
-		pt->left->parent = pt; 
+	if (ptr->left != NULL) 
+		ptr->left->parent = ptr; 
 
-	pt_left->parent = pt->parent; 
+	leftPtr->parent = ptr->parent; 
 
-	if (pt->parent == NULL) 
-		rootNode = pt_left; 
+	if (ptr->parent == NULL) 
+		rootNode = leftPtr; 
 
-	else if (pt == pt->parent->left) 
-		pt->parent->left = pt_left; 
+	else if (ptr == ptr->parent->left) 
+		ptr->parent->left = leftPtr; 
 
 	else
-		pt->parent->right = pt_left; 
+		ptr->parent->right = leftPtr; 
 
-	pt_left->right = pt; 
-	pt->parent = pt_left; 
+	leftPtr->right = ptr; 
+	ptr->parent = leftPtr; 
 }
 
 //rotate left
-void rotateLeft(node *&rootNode, node *&pt) 
+void leftRotate(node *&rootNode, node *&ptr) 
 { 
-	node *pt_right = pt->right; 
+	node *rightPtr = ptr->right; 
 
-	pt->right = pt_right->left; 
+	ptr->right = rightPtr->left; 
 
-	if (pt->right != NULL) 
-		pt->right->parent = pt; 
+	if (ptr->right != NULL) 
+		ptr->right->parent = ptr; 
 
-	pt_right->parent = pt->parent; 
+	rightPtr->parent = ptr->parent; 
 
-	if (pt->parent == NULL) 
-		rootNode = pt_right; 
+	if (ptr->parent == NULL) 
+		rootNode = rightPtr; 
 
-	else if (pt == pt->parent->left) 
-		pt->parent->left = pt_right; 
+	else if (ptr == ptr->parent->left) 
+		ptr->parent->left = rightPtr; 
 
 	else
-		pt->parent->right = pt_right; 
+		ptr->parent->right = rightPtr; 
 
-	pt_right->left = pt; 
-	pt->parent = pt_right; 
+	rightPtr->left = ptr; 
+	ptr->parent = rightPtr; 
 }
 
 //check for violences
-void fixViolation(node *&rootNode, node *&pt) 
+void arrangeNodes(node *&rootNode, node *&ptr) 
 { 
-	node *parent_pt = NULL; 
-	node *grand_parent_pt = NULL; 
-
-	while ((pt != rootNode) && (pt->black != 1) && 
-		(pt->parent->red == 1)) 
+	node *parentPtr = NULL; 
+	node *grandParentPtr = NULL; 
+	
+	while (ptr != rootNode && ptr->color != black && 
+		ptr->parent->color == red) 
 	{ 
+//		cout << "inside the while loop\n";
+		parentPtr = ptr->parent; 
+		grandParentPtr = ptr->parent->parent; 
 
-		parent_pt = pt->parent; 
-		grand_parent_pt = pt->parent->parent; 
-
-		/* Case : A 
-			Parent of pt is left child of Grand-parent of pt */
-		if (parent_pt == grand_parent_pt->left) 
+		//Case A
+		if (parentPtr == grandParentPtr->left) 
 		{ 
 
-			node *uncle_pt = grand_parent_pt->right; 
+			node *unclePtr = grandParentPtr->right; 
 
-			/* Case : 1 
-			The uncle of pt is also red 
-			Only Recoloring required */
-			if (uncle_pt != NULL && uncle_pt->red == 1) 
+			//Case 1
+			if (unclePtr != NULL && unclePtr->color == red) 
 			{ 
-				grand_parent_pt->red = 1; 
-				grand_parent_pt->black = 0;
-				parent_pt->black = 1;
-				parent_pt->red = 0; 
-				uncle_pt->black = 1; 
-				uncle_pt->red = 0;
-				pt = grand_parent_pt; 
+//				cout << "case 1 triggerd\n";
+				grandParentPtr->color = red; 
+				parentPtr->color = black; 
+				unclePtr->color = black; 
+				ptr = grandParentPtr; 
 			} 
 
 			else
 			{ 
-				/* Case : 2 
-				pt is right child of its parent 
-				Left-rotation required */
-				if (pt == parent_pt->right) 
+				//Case2
+				if (ptr == parentPtr->right) 
 				{ 
-					rotateLeft(rootNode, parent_pt); 
-					pt = parent_pt; 
-					parent_pt = pt->parent; 
+//					cout << "case 2 triggerd\n";
+					leftRotate(rootNode, parentPtr); 
+					ptr = parentPtr; 
+					parentPtr = ptr->parent; 
 				} 
 
-				/* Case : 3 
-				pt is left child of its parent 
-				Right-rotation required */
-				rotateRight(rootNode, grand_parent_pt); 
-				swap(parent_pt, grand_parent_pt); 
-				pt = parent_pt; 
+				//Case 3
+//				cout << "case 3 triggerd\n";
+				rightRotate(rootNode, grandParentPtr); 
+				swap(parentPtr->color, grandParentPtr->color); 
+				ptr = parentPtr; 
 			} 
 		} 
 
-		/* Case : B 
-		Parent of pt is right child of Grand-parent of pt */
+		//Case B
 		else
 		{ 
-			node *uncle_pt = grand_parent_pt->left; 
+			node *unclePtr = grandParentPtr->left; 
 
-			/* Case : 1 
-				The uncle of pt is also red 
-				Only Recoloring required */
-			if ((uncle_pt != NULL) && (uncle_pt->red == 1)) 
+			//Case 1
+			if ((unclePtr != NULL) && (unclePtr->color == red)) 
 			{ 
-				grand_parent_pt->red = 1; 
-				grand_parent_pt->black = 0;
-				parent_pt->black = 1; 
-				parent_pt->red = 0;
-				uncle_pt->black = 1;
-				uncle_pt->red = 0; 
-				pt = grand_parent_pt; 
+//				cout << "case 1 triggerd case B\n";
+				grandParentPtr->color = red; 
+				parentPtr->color = black; 
+				unclePtr->color = black; 
+				ptr = grandParentPtr; 
 			} 
 			else
 			{ 
-				/* Case : 2 
-				pt is left child of its parent 
-				Right-rotation required */
-				if (pt == parent_pt->left) 
+				//Case 2
+				if (ptr == parentPtr->left) 
 				{ 
-					rotateRight(rootNode, parent_pt); 
-					pt = parent_pt; 
-					parent_pt = pt->parent; 
+//					cout << "case 2 triggerd in Case B\n";
+					rightRotate(rootNode, parentPtr); 
+					ptr = parentPtr; 
+					parentPtr = ptr->parent; 
 				} 
 
-				/* Case : 3 
-				pt is right child of its parent 
-				Left-rotation required */
-				rotateLeft(rootNode, grand_parent_pt); 
-				swap(parent_pt, grand_parent_pt); 
-				pt = parent_pt; 
+				//Case 3
+//				cout << "case 3 triggerd in case B\n";
+				leftRotate(rootNode, grandParentPtr); 
+				swap(parentPtr->color, grandParentPtr->color); 
+				ptr = parentPtr; 
 			} 
 		} 
 	} 
 
-	rootNode->black = 1; 
+	rootNode->color = black; 
 } 
 
 //insert node
-struct node* insertNode(struct node* rootNode, struct node* ptr){
-	
-	if(rootNode == NULL){
+node* insertNode(struct node* rootNode, struct node* ptr){
 
+	if(rootNode == NULL){
+		
 		return ptr;
 	}
 	
 	if(ptr->data < rootNode->data){
 		
 		rootNode->left = insertNode(rootNode->left, ptr);
-		ptr->parent = rootNode;
-		cout << "left working" << endl;
-		return rootNode;
+		rootNode->left->parent = rootNode;
 	}else if(ptr->data >= rootNode->data){
 		
 		rootNode->right = insertNode(rootNode->right, ptr);
-		ptr->parent = rootNode;
-		cout << "right working" << endl;
-		return rootNode;
+		rootNode->right->parent = rootNode;
 	}
+	return rootNode;
+}
+
+void insert(int data){
+	
+	node *newNode = new node(data);
+	
+	root = insertNode(root, newNode);
+	
+	arrangeNodes(root, newNode);
 }
 
 void inOrderTraversal(struct node* ptr){
@@ -232,11 +202,20 @@ void inOrderTraversal(struct node* ptr){
 
 int main(){
 	
-	root = insertNode(root, createNode(5));
-	root = insertNode(root, createNode(2));
-	root = insertNode(root, createNode(7));
+	insert(5);
+	insert(3);
+	insert(7);
+	insert(6);
+
 	
 	inOrderTraversal(root);
+	
+	cout << endl;
+	
+//	cout << "\n" << root->right->left->parent->data << endl;
+//	cout << root->left->color << endl;
+//	cout << root->right->color << endl;
+//	cout << root->right->left->color << endl;
 	
 	return 0;
 }
