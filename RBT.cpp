@@ -211,21 +211,84 @@ node* searchNode(node* rootNode, int data){
 	}
 }
 
+//find right most
+node* findRightMost(node* rootNode){
+	
+	if(rootNode->right == NULL){
+		return rootNode;
+	}else{
+		return findRightMost(rootNode->right);
+	}
+}
+
+//find left most
+node* findLeftMost(node* rootNode){
+	
+	if(rootNode->left == NULL){
+		return rootNode;
+	}else{
+		return findLeftMost(rootNode->left);
+	}
+}
+
+//Delete nodes
+void deleteNode(int data){
+	
+	struct node* ptr = searchNode(root, data);
+	struct node* parentPtr = ptr->parent;
+	struct node* siblingPtr = NULL;
+	
+	if(ptr == parentPtr->left){
+		//Case A - left side deleting
+		
+		siblingPtr = parentPtr->right;
+		
+		if(siblingPtr->color == red){
+			//case 1									/* add feature when only one side of the 'ptr' is NULL */
+			if(ptr->left == NULL){
+				parentPtr->left = NULL;
+				delete(ptr);
+			}else{
+				ptr->data = findRightMost(ptr->left)->data;
+				delete(findRightMost(ptr->left));
+			}
+		}
+	}else if (ptr == parentPtr->right){
+		//Case B - right side deleting
+		
+		siblingPtr = parentPtr->left;
+		
+		if(siblingPtr->color == red){
+			//case 1
+			if(ptr->right == NULL){
+				parentPtr->right = NULL;
+				delete(ptr);
+			}else{
+				ptr->data = findLeftMost(ptr->right)->data;
+				delete(findLeftMost(ptr->right));
+			}
+		}
+	}else{
+		//not found situation
+		
+		cout << "Item not found!" << endl;
+	}
+}
+
 
 int main(){
 	
 	insert(5);
 	insert(3);
 	insert(7);
-	insert(6);
+//	insert(6);
 	
-	inOrderTraversal(root);
+	deleteNode(3);
+	deleteNode(7);
+	
+//	inOrderTraversal(root);
 	
 	cout << endl;
-	
-	node *test = searchNode(root, 7);
-	
-	cout << test->color << endl;
 	
 	return 0;
 }
