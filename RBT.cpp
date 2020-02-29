@@ -2,7 +2,7 @@
 
 using namespace std;
 
-enum Color {red, black};
+enum Color {red, black, doubleBlack, redBlack};
 
 struct node{
 	
@@ -83,27 +83,22 @@ void leftRotate(node *&rootNode, node *&ptr)
 }
 
 //check for violences
-void arrangeNodes(node *&rootNode, node *&ptr) 
-{ 
+void arrangeNodes(node *&rootNode, node *&ptr) { 
 	node *parentPtr = NULL; 
 	node *grandParentPtr = NULL; 
 	
-	while (ptr != rootNode && ptr->color != black && 
-		ptr->parent->color == red) 
-	{ 
+	while (ptr != rootNode && ptr->color != black && ptr->parent->color == red) { 
 
 		parentPtr = ptr->parent; 
 		grandParentPtr = ptr->parent->parent; 
 
 		//Case A
-		if (parentPtr == grandParentPtr->left) 
-		{ 
+		if (parentPtr == grandParentPtr->left){ 
 
 			node *unclePtr = grandParentPtr->right; 
 
 			//Case 1
-			if (unclePtr != NULL && unclePtr->color == red) 
-			{ 
+			if (unclePtr != NULL && unclePtr->color == red){ 
 
 				grandParentPtr->color = red; 
 				parentPtr->color = black; 
@@ -111,11 +106,9 @@ void arrangeNodes(node *&rootNode, node *&ptr)
 				ptr = grandParentPtr; 
 			} 
 
-			else
-			{ 
+			else{ 
 				//Case2
-				if (ptr == parentPtr->right) 
-				{ 
+				if (ptr == parentPtr->right){ 
 					leftRotate(rootNode, parentPtr); 
 					ptr = parentPtr; 
 					parentPtr = ptr->parent; 
@@ -128,24 +121,20 @@ void arrangeNodes(node *&rootNode, node *&ptr)
 		} 
 
 		//Case B
-		else
-		{ 
+		else{ 
 			node *unclePtr = grandParentPtr->left; 
 
 			//Case 1
-			if ((unclePtr != NULL) && (unclePtr->color == red)) 
-			{ 
+			if ((unclePtr != NULL) && (unclePtr->color == red)){ 
 
 				grandParentPtr->color = red; 
 				parentPtr->color = black; 
 				unclePtr->color = black; 
 				ptr = grandParentPtr; 
 			} 
-			else
-			{ 
+			else{ 
 				//Case 2
-				if (ptr == parentPtr->left) 
-				{ 
+				if (ptr == parentPtr->left){ 
 					rightRotate(rootNode, parentPtr); 
 					ptr = parentPtr; 
 					parentPtr = ptr->parent; 
@@ -162,7 +151,7 @@ void arrangeNodes(node *&rootNode, node *&ptr)
 	rootNode->color = black; 
 } 
 
-//insert node
+//insert node and connect to the parent
 node* insertNode(struct node* rootNode, struct node* ptr){
 
 	if(rootNode == NULL){
@@ -182,6 +171,7 @@ node* insertNode(struct node* rootNode, struct node* ptr){
 	return rootNode;
 }
 
+//Insert the node into the RBT
 void insert(int data){
 	
 	node *newNode = new node(data);
@@ -191,6 +181,7 @@ void insert(int data){
 	arrangeNodes(root, newNode);
 }
 
+//Inorder traversal
 void inOrderTraversal(struct node* ptr){
 	
 	if(ptr == NULL){
@@ -202,17 +193,39 @@ void inOrderTraversal(struct node* ptr){
 	inOrderTraversal(ptr->right);
 }
 
+//search for data
+node* searchNode(node* rootNode, int data){
+	
+	if(rootNode == NULL){
+		cout << "Not found!" << endl;
+		return root;
+	}
+	
+	if(rootNode->data == data){
+		cout << "Found " << rootNode->data << endl;
+		return rootNode;
+	}else if(rootNode->data > data){
+		return searchNode(rootNode->left, data);
+	}else{
+		return searchNode(rootNode->right, data);
+	}
+}
+
+
 int main(){
 	
 	insert(5);
 	insert(3);
 	insert(7);
 	insert(6);
-
 	
 	inOrderTraversal(root);
 	
 	cout << endl;
+	
+	node *test = searchNode(root, 7);
+	
+	cout << test->color << endl;
 	
 	return 0;
 }
