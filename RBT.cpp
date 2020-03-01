@@ -243,16 +243,32 @@ void deleteNode(int data){
 		
 		siblingPtr = parentPtr->right;
 		
-		if(siblingPtr->color == red){
-			//case 1									/* add feature when only one side of the 'ptr' is NULL */
+		if(ptr->color ==  red){
+			//red node deletion - nothing more required
 			if(ptr->left == NULL){
 				parentPtr->left = NULL;
 				delete(ptr);
 			}else{
 				ptr->data = findRightMost(ptr->left)->data;
-				delete(findRightMost(ptr->left));
+				if(findLeftMost(ptr->left)->color == red ){
+					//right most is red - just delete
+					delete(findRightMost(ptr->left));
+				}else{
+					//right most is black - violation check is required
+					cout << "deleted node  is black - (right most node)" << endl;
+				}
 			}
-		}
+		}else{
+			
+			if(siblingPtr->color == red){
+			
+				if(ptr->color == red){
+					
+				}
+				//case 1									/* add feature when only one side of the 'ptr' is NULL */
+				
+			}
+		} 
 	}else if (ptr == parentPtr->right){
 		//Case B - right side deleting
 		
@@ -281,10 +297,10 @@ int main(){
 	insert(5);
 	insert(3);
 	insert(7);
-//	insert(6);
+	insert(6);
 	
 	deleteNode(3);
-	deleteNode(7);
+//	deleteNode(6);
 	
 //	inOrderTraversal(root);
 	
