@@ -231,63 +231,68 @@ node* findLeftMost(node* rootNode){
 	}
 }
 
+//rotate around nodes
+//void leftRotateAbout(node* thisNode, node* aboutNode){
+//	
+//	node* thisNodeLeft = thisNode->left;
+//	thisNode->parent = aboutNode->parent;
+//	thisNode->left = aboutNode;
+//	thisNode->parent->right = thisNode;
+//	thisNode->left->right = thisNodeLeft;
+//}
+
 //Delete nodes
-void deleteNode(int data){
+void deleteNode(){
 	
-	struct node* ptr = searchNode(root, data);
+	struct node* ptr = findLeftMost(root);
 	struct node* parentPtr = ptr->parent;
 	struct node* siblingPtr = NULL;
 	
-	if(ptr == parentPtr->left){
+	if(ptr != NULL){
 		//Case A - left side deleting
-		
 		siblingPtr = parentPtr->right;
 		
 		if(ptr->color ==  red){
 			//red node deletion - nothing more required
-			if(ptr->left == NULL){
-				parentPtr->left = NULL;
-				delete(ptr);
-			}else{
-				ptr->data = findRightMost(ptr->left)->data;
-				if(findLeftMost(ptr->left)->color == red ){
-					//right most is red - just delete
-					delete(findRightMost(ptr->left));
-				}else{
-					//right most is black - violation check is required
-					cout << "deleted node  is black - (right most node)" << endl;
-				}
-			}
+			parentPtr->left = NULL;
+			delete(ptr);
 		}else{
-			
+			//black node deletion - forms another  case
 			if(siblingPtr->color == red){
-			
-				if(ptr->color == red){
-					
+				//deletion case 1
+				delete(parentPtr->left);
+				parentPtr->left = NULL;
+				swap(parentPtr->color, siblingPtr->color);
+				/*left rotate sibling around parent*/ 
+				leftRotate(root, siblingPtr->parent);
+			}else{
+				//sibling is black - then check sibling's childern
+				if(siblingPtr->left == NULL && siblingPtr->right->color == red){
+					//deletion case 4
+					delete(parentPtr->left);
+					parentPtr->left = NULL;
+					swap(parentPtr->color, siblingPtr->color);
+					/*left rotation of w around p[x] */
+					leftRotate(root, siblingPtr->parent);
 				}
-				//case 1									/* add feature when only one side of the 'ptr' is NULL */
+//				if((siblingPtr->left == NULL && siblingPtr->right == NULL) || (siblingPtr->left->color == black && siblingPtr->right->color == black)){
+//					//deletion case 2
+//					cout << "not implemented yet!" << endl;
+//				}
+				if(siblingPtr->left->color == red && (siblingPtr->right->color == black || siblingPtr->right == NULL)){
+			 		//deletion case 3
+			 		delete(parentPtr->left);
+					parentPtr->left = NULL;
+					swap(siblingPtr->left->color, siblingPtr->color);
+					/* right rotate left[w] around w*/
+					rightRotate(siblingPtr, siblingPtr);
+				}
 				
+//				if(siblingPtr->right->color == red && siblingPtr->left == NULL){
+//					
+//				}
 			}
 		} 
-	}else if (ptr == parentPtr->right){
-		//Case B - right side deleting
-		
-		siblingPtr = parentPtr->left;
-		
-		if(siblingPtr->color == red){
-			//case 1
-			if(ptr->right == NULL){
-				parentPtr->right = NULL;
-				delete(ptr);
-			}else{
-				ptr->data = findLeftMost(ptr->right)->data;
-				delete(findLeftMost(ptr->right));
-			}
-		}
-	}else{
-		//not found situation
-		
-		cout << "Item not found!" << endl;
 	}
 }
 
@@ -298,13 +303,21 @@ int main(){
 	insert(3);
 	insert(7);
 	insert(6);
+	insert(2);
+	insert(1);
+	insert(4);
 	
-	deleteNode(3);
+//	cout << "Left most element " << findLeftMost(root)->data << endl;
+	
+	deleteNode();
+	deleteNode();
 //	deleteNode(6);
 	
-//	inOrderTraversal(root);
+	inOrderTraversal(root);
 	
 	cout << endl;
+	
+	cout << "root-left-left-data " << root->left->left->data << endl;
 	
 	return 0;
 }
