@@ -231,70 +231,228 @@ node* findLeftMost(node* rootNode){
 	}
 }
 
-//rotate around nodes
-//void leftRotateAbout(node* thisNode, node* aboutNode){
-//	
-//	node* thisNodeLeft = thisNode->left;
-//	thisNode->parent = aboutNode->parent;
-//	thisNode->left = aboutNode;
-//	thisNode->parent->right = thisNode;
-//	thisNode->left->right = thisNodeLeft;
-//}
+//======================================DELETION=============================
 
-//Delete nodes
-void deleteNode(){
-	
-	struct node* ptr = findLeftMost(root);
-	struct node* parentPtr = ptr->parent;
-	struct node* siblingPtr = NULL;
-	
-	if(ptr != NULL){
-		//Case A - left side deleting
-		siblingPtr = parentPtr->right;
-		
-		if(ptr->color ==  red){
-			//red node deletion - nothing more required
-			parentPtr->left = NULL;
-			delete(ptr);
-		}else{
-			//black node deletion - forms another  case
-			if(siblingPtr->color == red){
-				//deletion case 1
-				delete(parentPtr->left);
-				parentPtr->left = NULL;
-				swap(parentPtr->color, siblingPtr->color);
-				/*left rotate sibling around parent*/ 
-				leftRotate(root, siblingPtr->parent);
-			}else{
-				//sibling is black - then check sibling's childern
-				if(siblingPtr->left == NULL && siblingPtr->right->color == red){
-					//deletion case 4
-					delete(parentPtr->left);
-					parentPtr->left = NULL;
-					swap(parentPtr->color, siblingPtr->color);
-					/*left rotation of w around p[x] */
-					leftRotate(root, siblingPtr->parent);
-				}
-//				if((siblingPtr->left == NULL && siblingPtr->right == NULL) || (siblingPtr->left->color == black && siblingPtr->right->color == black)){
-//					//deletion case 2
-//					cout << "not implemented yet!" << endl;
-//				}
-				if(siblingPtr->left->color == red && (siblingPtr->right->color == black || siblingPtr->right == NULL)){
-			 		//deletion case 3
-			 		delete(parentPtr->left);
-					parentPtr->left = NULL;
-					swap(siblingPtr->left->color, siblingPtr->color);
-					/* right rotate left[w] around w*/
-					rightRotate(siblingPtr, siblingPtr);
-				}
-				
-//				if(siblingPtr->right->color == red && siblingPtr->left == NULL){
-//					
-//				}
-			}
-		} 
-	}
+node* successor(node*& rootNode)
+{
+      node *k=NULL;
+     if(rootNode->left!=NULL)
+     {
+         k=rootNode->left;
+         while(k->right!=NULL)
+              k=k->right;
+     }
+     else
+     {
+         k=rootNode->right;
+         while(k->left!=NULL)
+              k=k->left;
+     }
+     return k;
+
 }
+
+//rotate left
+void rotateLeft(node *&rootNode, node *&ptr) 
+{ 
+	node *rightPtr = ptr->right; 
+
+	ptr->right = rightPtr->left; 
+
+	if (ptr->right != NULL) {
+		ptr->right->parent = ptr; 
+	}
+
+	rightPtr->parent = ptr->parent; 
+
+	if (ptr->parent == NULL) {
+		rootNode = rightPtr; 
+	}
+
+	else if (ptr == ptr->parent->left) {
+		ptr->parent->left = rightPtr; 
+	}
+
+	else{
+		ptr->parent->right = rightPtr; 
+	}
+
+	rightPtr->left = ptr; 
+	ptr->parent = rightPtr; 
+}
+
+//rotate right
+void rotateRight(node *&rootNode, node *&ptr) { 
+	node *leftPtr = ptr->left; 
+
+	ptr->left = leftPtr->right; 
+
+	if (ptr->left != NULL){
+		ptr->left->parent = ptr; 
+	} 
+
+	leftPtr->parent = ptr->parent; 
+
+	if (ptr->parent == NULL){
+		rootNode = leftPtr; 
+	} 
+
+	else if (ptr == ptr->parent->left) {
+		ptr->parent->left = leftPtr; 
+	}
+
+	else{
+		ptr->parent->right = leftPtr; 
+	}
+
+	leftPtr->right = ptr; 
+	ptr->parent = leftPtr; 
+}
+
+//rbt deletion fix-up
+void rbtDeleteFix(node*& rootNode, node*& x, int isLeft){
+	
+	
+	while(x!= root && x->color == black){
+		node* w = NULL;
+		if(isLeft == 1){
+			w = x->parent->right;
+			if(w->color == red){
+				w->color = black;
+				x->parent->color = red;
+				rotateLeft(rootNode, x->parent);
+				w = x->parent->right;
+			}	
+		}
+		
+		if ((w->left == NULL && w->right == NULL) ||
+                ((w->left != NULL && w->left->color == black) &&
+                 (w->right != NULL && w->right->color == black))) {
+                w->color = red;
+                if (x->parent->color == red) {
+                    x->parent->color = black;
+                    x = root; // parent is red black and fixing ends
+                } else {
+                    x = x->parent;
+                }
+            }
+                //case 2 //
+                //case 3 :
+            else if (w->right == NULL ||
+                     (w->right != NULL && w->right->color == black)) {
+                w->left->color = black;
+                w->color = red;
+                rightRotate(rootNode, w);
+                w = x->right;
+            }
+                //case 3 //
+                //case 4 :
+            else if (w->right->color == red) {
+                w->color = x->parent->color;
+                x->parent->color = black;
+                w->right->color = black;
+                leftRotate(rootNode, x->parent);
+                x = root; //terminating case -- hence node is root and ends up the while loop
+            }
+            //case 4 //
+            else {
+            w = x->parent->left;
+            //case 1 :
+            if (w->color == red) {
+                w->color = black;
+                x->parent->color = red;
+                rightRotate(rootNode, x->parent);
+                w = x->parent->left;
+            }
+            //case 1 //
+            //case 2 :
+            if ((w->left == NULL && w->right == NULL) ||
+                ((w->left != NULL && w->left->color == black) &&
+                 (w->right != NULL && w->right->color == black))) {
+        		w->color = red;
+                if (x->parent->color == red) {
+                    x->parent->color = black;
+                    x = root; // parent is red black and fixing ends
+                } else {
+                    x = x->parent;
+                }
+            }
+                //case 2 //
+                //case 3 :
+            else if (w->left == NULL ||
+                     (w->left != NULL && w->left->color == black)) {
+                w->right->color = black;
+                w->color = red;
+                rightRotate(rootNode, w);
+                w = x->left;
+            }
+                //case 3 //
+                //case 4 :
+            else if (w->left->color == red) {
+                w->color = x->parent->color;
+                x->parent->color = black;
+                w->left->color = black;
+                rightRotate(rootNode, x->parent);
+                x = root;
+            }
+            //case 4 //
+        }
+		x->color = black;
+        } 
+	
+}
+
+//delet rbt
+node* rbDelete(node*& rootNode, node*& z){
+	
+	node* y = NULL;
+	node* x = NULL;
+	
+	if(z == rootNode){
+		cout << "Root deleted!" << endl;
+		root = NULL;
+		return z;
+	}
+	
+	if(z->left == NULL || z->right == NULL){
+		y = z;
+	}else{
+		y = successor(z);
+	}
+	
+	if(y->left != NULL){
+		x = y->left;
+		x->parent = y->parent;
+	}else{
+		if(y->right != NULL){
+			x = y->right;
+			x->parent = y->parent;
+		}
+	}
+	
+	bool isLeft = 0;
+	
+	if(y->parent == NULL){
+		rootNode = x;
+	}else if(y == y->parent->left){
+		y->parent->left = x;
+		isLeft = 1;
+	}else{
+		y->parent->right = x;
+	}
+	
+	if(y != z){
+		z->data = y->data;
+	}
+	
+	if(y->color == black){
+		//delete fix-up
+		rbtDeleteFix(rootNode, z, isLeft);
+	}
+	
+	return y;
+}
+
 
 
 int main(){
@@ -307,17 +465,30 @@ int main(){
 	insert(1);
 	insert(4);
 	
-//	cout << "Left most element " << findLeftMost(root)->data << endl;
+
+
+	node* temp = findLeftMost(root);
+	rbDelete(root, temp);
+	temp = findLeftMost(root);
+	rbDelete(root, temp);
+	temp = findLeftMost(root);
+	rbDelete(root, temp);
+	temp = findLeftMost(root);
+	rbDelete(root, temp);
+	temp = findLeftMost(root);
+	rbDelete(root, temp);
 	
-	deleteNode();
-	deleteNode();
-//	deleteNode(6);
 	
-	inOrderTraversal(root);
+	cout << root->data << endl;
 	
-	cout << endl;
+	temp = findLeftMost(root);
+	rbDelete(root, temp);
 	
-	cout << "root-left-left-data " << root->left->left->data << endl;
+	
+	
+//	temp = findLeftMost(root);
+//	cout << temp->data << endl;
+
 	
 	return 0;
 }
