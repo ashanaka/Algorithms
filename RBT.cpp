@@ -479,10 +479,15 @@ int main(){
 	rbDelete(root, temp);
 	
 	
-	cout << root->data << endl;
+//	cout << root->data << endl;
 	
 	temp = findLeftMost(root);
 	rbDelete(root, temp);
+	
+	cout << "new root " << root->data << endl;
+	
+//	temp = findLeftMost(root);
+//	rbDelete(root, temp);
 	
 	
 	
