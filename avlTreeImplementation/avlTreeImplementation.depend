@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1577975711 source:/home/ashan/Documents/cpp/avlTreeImplementation/main.c
+	<stdio.h>
+	<stdlib.h>
+
